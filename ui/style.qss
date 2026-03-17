@@ -1,0 +1,315 @@
+/* ui/style.qss - 산업용 HMI 다크 테마 */
+
+/* ─── 전체 기본 ─── */
+QMainWindow, QWidget {
+    background-color: #1a1a2e;
+    color: #e0e0e0;
+    font-family: "Malgun Gothic", "맑은 고딕", "Segoe UI", sans-serif;
+    font-size: 12px;
+}
+
+QTabWidget::pane {
+    border: 1px solid #2d2d4e;
+    background-color: #16213e;
+}
+
+QTabBar::tab {
+    background-color: #0f3460;
+    color: #a0a0c0;
+    padding: 8px 20px;
+    border: 1px solid #2d2d4e;
+    border-bottom: none;
+    min-width: 100px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+QTabBar::tab:selected {
+    background-color: #e94560;
+    color: #ffffff;
+}
+
+QTabBar::tab:hover:!selected {
+    background-color: #1a4a8a;
+}
+
+/* ─── 버튼 ─── */
+QPushButton {
+    background-color: #0f3460;
+    color: #e0e0e0;
+    border: 1px solid #2d5a8a;
+    border-radius: 4px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: bold;
+    min-height: 28px;
+}
+
+QPushButton:hover {
+    background-color: #1a4a8a;
+    border-color: #4a8adf;
+}
+
+QPushButton:pressed {
+    background-color: #0a2040;
+}
+
+QPushButton:disabled {
+    background-color: #2d2d4e;
+    color: #606080;
+    border-color: #3d3d5e;
+}
+
+/* 시작 버튼 */
+QPushButton#btn_autorun {
+    background-color: #27ae60;
+    border-color: #2ecc71;
+    color: white;
+    font-size: 14px;
+    min-width: 120px;
+    min-height: 36px;
+}
+QPushButton#btn_autorun:hover { background-color: #2ecc71; }
+QPushButton#btn_autorun:disabled { background-color: #1a5c38; }
+
+/* 정지 버튼 */
+QPushButton#btn_stop {
+    background-color: #c0392b;
+    border-color: #e74c3c;
+    color: white;
+    font-size: 14px;
+    min-width: 120px;
+    min-height: 36px;
+}
+QPushButton#btn_stop:hover { background-color: #e74c3c; }
+
+/* 퍼지 버튼 */
+QPushButton#btn_purge {
+    background-color: #8e44ad;
+    border-color: #9b59b6;
+    color: white;
+    min-width: 100px;
+    min-height: 36px;
+}
+QPushButton#btn_purge:hover { background-color: #9b59b6; }
+
+/* 비상 버튼 */
+QPushButton#btn_emergency {
+    background-color: #922b21;
+    border-color: #e74c3c;
+    border-width: 2px;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    min-width: 130px;
+    min-height: 40px;
+}
+QPushButton#btn_emergency:hover { background-color: #e74c3c; }
+
+/* ─── 밸브 버튼 ─── */
+QPushButton#valve_open {
+    background-color: #196f3d;
+    border: 2px solid #27ae60;
+    color: #aaffaa;
+    border-radius: 6px;
+    min-width: 52px;
+    min-height: 44px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+QPushButton#valve_closed {
+    background-color: #2d2d4e;
+    border: 2px solid #566573;
+    color: #a0a0c0;
+    border-radius: 6px;
+    min-width: 52px;
+    min-height: 44px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* ─── 테이블 ─── */
+QTableWidget {
+    background-color: #12122a;
+    alternate-background-color: #1a1a3a;
+    color: #e0e0e0;
+    gridline-color: #2d2d4e;
+    selection-background-color: #1a4a8a;
+    border: 1px solid #2d2d4e;
+}
+
+QTableWidget::item:selected {
+    background-color: #1a4a8a;
+    color: white;
+}
+
+QHeaderView::section {
+    background-color: #0f3460;
+    color: #a0d0ff;
+    padding: 5px;
+    border: 1px solid #2d5a8a;
+    font-weight: bold;
+}
+
+/* ─── 입력 위젯 ─── */
+QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox {
+    background-color: #12122a;
+    color: #e0e0e0;
+    border: 1px solid #2d5a8a;
+    border-radius: 3px;
+    padding: 3px 6px;
+    min-height: 24px;
+}
+
+QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus {
+    border-color: #4a8adf;
+}
+
+QComboBox::drop-down {
+    border: none;
+    background-color: #0f3460;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #1a1a2e;
+    selection-background-color: #1a4a8a;
+    color: #e0e0e0;
+}
+
+/* ─── 그룹박스 ─── */
+QGroupBox {
+    border: 1px solid #2d5a8a;
+    border-radius: 6px;
+    margin-top: 14px;
+    padding-top: 6px;
+    font-weight: bold;
+    color: #a0d0ff;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 8px;
+    color: #a0d0ff;
+}
+
+/* ─── 라벨 ─── */
+QLabel#label_pv {
+    background-color: #006060;
+    color: #00ffee;
+    border: 1px solid #00ccbb;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 13px;
+    qproperty-alignment: AlignCenter;
+}
+
+QLabel#label_sv {
+    background-color: #804000;
+    color: #ffcc00;
+    border: 1px solid #cc8800;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 13px;
+    qproperty-alignment: AlignCenter;
+}
+
+QLabel#label_title {
+    color: #4a9eff;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+QLabel#label_status {
+    color: #a0a0c0;
+    font-size: 12px;
+}
+
+/* ─── 프로그레스 바 ─── */
+QProgressBar {
+    background-color: #12122a;
+    border: 1px solid #2d5a8a;
+    border-radius: 4px;
+    color: white;
+    text-align: center;
+    min-height: 18px;
+}
+
+QProgressBar::chunk {
+    background-color: #1a6ebf;
+    border-radius: 3px;
+}
+
+QProgressBar#pb_prepare::chunk { background-color: #f39c12; }
+QProgressBar#pb_measure::chunk { background-color: #27ae60; }
+
+/* ─── 로그 텍스트 ─── */
+QPlainTextEdit#log_view {
+    background-color: #0a0a1a;
+    color: #c0c0d0;
+    border: 1px solid #2d2d4e;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 11px;
+}
+
+/* ─── 구분선 ─── */
+QFrame[frameShape="4"],   /* HLine */
+QFrame[frameShape="5"] {  /* VLine */
+    color: #2d2d4e;
+}
+
+/* ─── 스크롤바 ─── */
+QScrollBar:vertical {
+    background-color: #12122a;
+    width: 12px;
+}
+QScrollBar::handle:vertical {
+    background-color: #2d5a8a;
+    border-radius: 4px;
+    min-height: 20px;
+}
+QScrollBar:horizontal {
+    background-color: #12122a;
+    height: 12px;
+}
+QScrollBar::handle:horizontal {
+    background-color: #2d5a8a;
+    border-radius: 4px;
+    min-width: 20px;
+}
+
+/* ─── 체크박스 ─── */
+QCheckBox {
+    color: #c0c0d0;
+    spacing: 6px;
+}
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #2d5a8a;
+    border-radius: 3px;
+    background-color: #12122a;
+}
+QCheckBox::indicator:checked {
+    background-color: #27ae60;
+    border-color: #2ecc71;
+}
+
+/* ─── 상태바 ─── */
+QStatusBar {
+    background-color: #0f0f1e;
+    color: #a0a0c0;
+    border-top: 1px solid #2d2d4e;
+}
+
+/* ─── 다이얼로그 ─── */
+QDialog {
+    background-color: #1a1a2e;
+}
+
+QDialogButtonBox QPushButton {
+    min-width: 80px;
+}

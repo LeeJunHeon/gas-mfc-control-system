@@ -1,0 +1,92 @@
+{
+  "channels": [
+    {
+      "idx": 0,
+      "name": "Air 1",
+      "gas_name": "Air",
+      "source_conc_ppm": 0,
+      "full_scale_sccm": 2000,
+      "cf": 1.0,
+      "is_balance": true,
+      "enabled": true,
+      "color": "#3498db"
+    },
+    {
+      "idx": 1,
+      "name": "Air 2",
+      "gas_name": "Air",
+      "source_conc_ppm": 0,
+      "full_scale_sccm": 2000,
+      "cf": 1.0,
+      "is_balance": true,
+      "enabled": true,
+      "color": "#3498db"
+    },
+    {
+      "idx": 2,
+      "name": "Air 3",
+      "gas_name": "Air",
+      "source_conc_ppm": 0,
+      "full_scale_sccm": 2000,
+      "cf": 1.0,
+      "is_balance": false,
+      "enabled": true,
+      "color": "#2980b9"
+    },
+    {
+      "idx": 3,
+      "name": "Air 4",
+      "gas_name": "Air",
+      "source_conc_ppm": 0,
+      "full_scale_sccm": 2000,
+      "cf": 1.0,
+      "is_balance": false,
+      "enabled": true,
+      "color": "#2980b9"
+    },
+    {
+      "idx": 4,
+      "name": "Gas 1",
+      "gas_name": "NO2",
+      "source_conc_ppm": 10,
+      "full_scale_sccm": 2000,
+      "cf": 1.01,
+      "is_balance": false,
+      "enabled": true,
+      "color": "#e74c3c"
+    },
+    {
+      "idx": 5,
+      "name": "Gas 2",
+      "gas_name": "NO",
+      "source_conc_ppm": 100,
+      "full_scale_sccm": 200,
+      "cf": 1.01,
+      "is_balance": false,
+      "enabled": true,
+      "color": "#e67e22"
+    },
+    {
+      "idx": 6,
+      "name": "Gas 3",
+      "gas_name": "N2",
+      "source_conc_ppm": 0,
+      "full_scale_sccm": 100,
+      "cf": 1.0,
+      "is_balance": false,
+      "enabled": false,
+      "color": "#9b59b6"
+    },
+    {
+      "idx": 7,
+      "name": "Gas 4",
+      "gas_name": "N2",
+      "source_conc_ppm": 0,
+      "full_scale_sccm": 2000,
+      "cf": 1.0,
+      "is_balance": false,
+      "enabled": false,
+      "color": "#1abc9c"
+    }
+  ]
+}

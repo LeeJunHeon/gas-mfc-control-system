@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "name": "sample_NO2_humidity",
+  "loop_count": 2,
+  "interval_sec": 0,
+  "bubbler_temp_c": 25.0,
+  "system_pressure_kpa": 101.3,
+  "steps": [
+    {
+      "step_id": "P1",
+      "total_flow_sccm": 1000.0,
+      "humidity_pct": 40.0,
+      "gas_targets": {"4": 5.0},
+      "prepare_sec": 10,
+      "measure_sec": 10,
+      "repeat": 1,
+      "fourway": "vent"
+    },
+    {
+      "step_id": "P2",
+      "total_flow_sccm": 1000.0,
+      "humidity_pct": 40.0,
+      "gas_targets": {"4": 3.0},
+      "prepare_sec": 10,
+      "measure_sec": 10,
+      "repeat": 1,
+      "fourway": "chamber"
+    }
+  ]
+}

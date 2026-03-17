@@ -1,0 +1,94 @@
+{
+  "driver_type": "mock",
+  "plc": {
+    "type": "modbus_tcp",
+    "host": "192.168.1.100",
+    "port": 502,
+    "timeout_sec": 3
+  },
+  "adc": {
+    "type": "ni_daq",
+    "device": "Dev1",
+    "channels": [
+      "ai0",
+      "ai1",
+      "ai2",
+      "ai3",
+      "ai4",
+      "ai5",
+      "ai6",
+      "ai7"
+    ],
+    "v_min": 0.0,
+    "v_max": 5.0
+  },
+  "dac": {
+    "type": "ni_daq",
+    "device": "Dev1",
+    "channels": [
+      "ao0",
+      "ao1",
+      "ao2",
+      "ao3",
+      "ao4",
+      "ao5",
+      "ao6",
+      "ao7"
+    ],
+    "v_min": 0.0,
+    "v_max": 5.0
+  },
+  "channel_pins": {
+    "0": {
+      "dac_ch": 0,
+      "adc_ch": 0,
+      "va_coil": 0,
+      "sol_coil": 8
+    },
+    "1": {
+      "dac_ch": 1,
+      "adc_ch": 1,
+      "va_coil": 1,
+      "sol_coil": 9
+    },
+    "2": {
+      "dac_ch": 2,
+      "adc_ch": 2,
+      "va_coil": 2,
+      "sol_coil": 10
+    },
+    "3": {
+      "dac_ch": 3,
+      "adc_ch": 3,
+      "va_coil": 3,
+      "sol_coil": 11
+    },
+    "4": {
+      "dac_ch": 4,
+      "adc_ch": 4,
+      "va_coil": 4,
+      "sol_coil": 12
+    },
+    "5": {
+      "dac_ch": 5,
+      "adc_ch": 5,
+      "va_coil": 5,
+      "sol_coil": 13
+    },
+    "6": {
+      "dac_ch": 6,
+      "adc_ch": 6,
+      "va_coil": 6,
+      "sol_coil": 14
+    },
+    "7": {
+      "dac_ch": 7,
+      "adc_ch": 7,
+      "va_coil": 7,
+      "sol_coil": 15
+    }
+  },
+  "fourway_coil": 16,
+  "purge_duration_sec": 30,
+  "warmup_sec": 300
+}

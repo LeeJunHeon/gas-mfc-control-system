@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "name": "NO2_humidity_test",
+  "loop_count": 3,
+  "interval_sec": 0,
+  "bubbler_temp_c": 25.0,
+  "system_pressure_kpa": 101.3,
+  "steps": [
+    {
+      "step_id": "P1",
+      "total_flow_sccm": 1000.0,
+      "humidity_pct": 40.0,
+      "gas_targets": {"4": 5.0, "5": 0.0},
+      "prepare_sec": 3600,
+      "measure_sec": 300,
+      "repeat": 1,
+      "fourway": "vent"
+    },
+    {
+      "step_id": "P2",
+      "total_flow_sccm": 1000.0,
+      "humidity_pct": 40.0,
+      "gas_targets": {"4": 5.0, "5": 0.0},
+      "prepare_sec": 600,
+      "measure_sec": 300,
+      "repeat": 1,
+      "fourway": "chamber"
+    },
+    {
+      "step_id": "P3",
+      "total_flow_sccm": 1000.0,
+      "humidity_pct": 40.0,
+      "gas_targets": {"4": 0.0, "5": 50.0},
+      "prepare_sec": 600,
+      "measure_sec": 300,
+      "repeat": 1,
+      "fourway": "chamber"
+    },
+    {
+      "step_id": "P4",
+      "total_flow_sccm": 1000.0,
+      "humidity_pct": 40.0,
+      "gas_targets": {"4": 0.0, "5": 50.0},
+      "prepare_sec": 600,
+      "measure_sec": 300,
+      "repeat": 2,
+      "fourway": "chamber"
+    },
+    {
+      "step_id": "P5",
+      "total_flow_sccm": 1000.0,
+      "humidity_pct": 0.0,
+      "gas_targets": {"4": 0.0, "5": 0.0},
+      "prepare_sec": 600,
+      "measure_sec": 300,
+      "repeat": 1,
+      "fourway": "vent"
+    }
+  ]
+}

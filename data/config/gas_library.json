@@ -1,0 +1,100 @@
+{
+  "gases": [
+    {
+      "name": "N2",
+      "cf": 1.0,
+      "mol_weight": 28.0,
+      "note": "기준 가스"
+    },
+    {
+      "name": "Air",
+      "cf": 1.0,
+      "mol_weight": 28.9,
+      "note": ""
+    },
+    {
+      "name": "O2",
+      "cf": 0.98,
+      "mol_weight": 32.0,
+      "note": ""
+    },
+    {
+      "name": "H2",
+      "cf": 1.4,
+      "mol_weight": 2.0,
+      "note": ""
+    },
+    {
+      "name": "He",
+      "cf": 1.454,
+      "mol_weight": 4.0,
+      "note": ""
+    },
+    {
+      "name": "Ar",
+      "cf": 1.415,
+      "mol_weight": 39.9,
+      "note": ""
+    },
+    {
+      "name": "CO2",
+      "cf": 0.74,
+      "mol_weight": 44.0,
+      "note": ""
+    },
+    {
+      "name": "CO",
+      "cf": 1.0,
+      "mol_weight": 28.0,
+      "note": ""
+    },
+    {
+      "name": "CH4",
+      "cf": 0.717,
+      "mol_weight": 16.0,
+      "note": ""
+    },
+    {
+      "name": "NO",
+      "cf": 1.01,
+      "mol_weight": 30.0,
+      "note": ""
+    },
+    {
+      "name": "NO2",
+      "cf": 1.01,
+      "mol_weight": 46.0,
+      "note": "실측 보정 권장"
+    },
+    {
+      "name": "NH3",
+      "cf": 0.73,
+      "mol_weight": 17.0,
+      "note": ""
+    },
+    {
+      "name": "H2S",
+      "cf": 0.84,
+      "mol_weight": 34.1,
+      "note": ""
+    },
+    {
+      "name": "SO2",
+      "cf": 0.69,
+      "mol_weight": 64.1,
+      "note": ""
+    },
+    {
+      "name": "SF6",
+      "cf": 0.27,
+      "mol_weight": 146.1,
+      "note": ""
+    },
+    {
+      "name": "C3H8",
+      "cf": 0.64,
+      "mol_weight": 44.1,
+      "note": "프로판"
+    }
+  ]
+}

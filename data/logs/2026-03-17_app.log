@@ -1,0 +1,46 @@
+2026-03-17 17:21:56,840 [INFO] __main__: ============================================================
+2026-03-17 17:21:56,841 [INFO] __main__: GAS Control System 시작
+2026-03-17 17:21:56,841 [INFO] __main__: ============================================================
+2026-03-17 17:21:56,965 [INFO] app.config: 가스 라이브러리 로드: 16종
+2026-03-17 17:21:56,966 [INFO] app.config: 채널 설정 로드: 8채널
+2026-03-17 17:21:59,407 [INFO] drivers.mock_driver: [MockDriver] 연결됨 (시뮬레이션 모드)
+2026-03-17 17:21:59,410 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 시뮬레이션 모드 시작 (Mock Driver)
+2026-03-17 17:21:59,411 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 프로그램 시작
+2026-03-17 17:21:59,805 [INFO] __main__: UI 시작됨
+2026-03-17 17:22:05,763 [CRITICAL] services.device_service: 비상 정지 실행
+2026-03-17 17:22:05,764 [INFO] drivers.mock_driver: [MockDriver] 연결 해제
+2026-03-17 17:22:05,765 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 프로그램 종료
+2026-03-17 17:24:06,854 [INFO] __main__: ============================================================
+2026-03-17 17:24:06,855 [INFO] __main__: GAS Control System 시작
+2026-03-17 17:24:06,855 [INFO] __main__: ============================================================
+2026-03-17 17:24:06,993 [INFO] app.config: 가스 라이브러리 로드: 16종
+2026-03-17 17:24:06,995 [INFO] app.config: 채널 설정 로드: 8채널
+2026-03-17 17:24:07,889 [INFO] drivers.mock_driver: [MockDriver] 연결됨 (시뮬레이션 모드)
+2026-03-17 17:24:07,890 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 시뮬레이션 모드 시작 (Mock Driver)
+2026-03-17 17:24:07,890 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 프로그램 시작
+2026-03-17 17:24:08,142 [INFO] __main__: UI 시작됨
+2026-03-17 17:24:13,992 [INFO] calculation.humidity_calculator: 습도 조건: 버블러 25.0°C, P_sat=3.158kPa, 압력=101.3kPa
+2026-03-17 17:24:18,820 [INFO] calculation.humidity_calculator: 습도 조건: 버블러 25.0°C, P_sat=3.158kPa, 압력=101.3kPa
+2026-03-17 17:24:19,213 [INFO] calculation.humidity_calculator: 습도 조건: 버블러 25.0°C, P_sat=3.158kPa, 압력=101.3kPa
+2026-03-17 17:24:19,782 [INFO] calculation.humidity_calculator: 습도 조건: 버블러 25.0°C, P_sat=3.158kPa, 압력=101.3kPa
+2026-03-17 17:24:20,131 [INFO] calculation.humidity_calculator: 습도 조건: 버블러 25.0°C, P_sat=3.158kPa, 압력=101.3kPa
+2026-03-17 17:24:20,471 [INFO] calculation.humidity_calculator: 습도 조건: 버블러 25.0°C, P_sat=3.158kPa, 압력=101.3kPa
+2026-03-17 17:24:20,897 [INFO] calculation.humidity_calculator: 습도 조건: 버블러 25.0°C, P_sat=3.158kPa, 압력=101.3kPa
+2026-03-17 17:24:21,317 [INFO] calculation.humidity_calculator: 습도 조건: 버블러 25.0°C, P_sat=3.158kPa, 압력=101.3kPa
+2026-03-17 17:24:22,115 [INFO] calculation.humidity_calculator: 습도 조건: 버블러 25.0°C, P_sat=3.158kPa, 압력=101.3kPa
+2026-03-17 17:24:22,433 [INFO] calculation.humidity_calculator: 습도 조건: 버블러 25.0°C, P_sat=3.158kPa, 압력=101.3kPa
+2026-03-17 17:24:34,929 [CRITICAL] services.device_service: 비상 정지 실행
+2026-03-17 17:24:34,930 [INFO] drivers.mock_driver: [MockDriver] 연결 해제
+2026-03-17 17:24:34,930 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 프로그램 종료
+2026-03-17 17:50:42,373 [INFO] __main__: ============================================================
+2026-03-17 17:50:42,374 [INFO] __main__: GAS Control System 시작
+2026-03-17 17:50:42,374 [INFO] __main__: ============================================================
+2026-03-17 17:50:42,509 [INFO] app.config: 가스 라이브러리 로드: 16종
+2026-03-17 17:50:42,510 [INFO] app.config: 채널 설정 로드: 8채널
+2026-03-17 17:50:43,757 [INFO] drivers.mock_driver: [MockDriver] 연결됨 (시뮬레이션 모드)
+2026-03-17 17:50:43,762 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 시뮬레이션 모드 시작 (Mock Driver)
+2026-03-17 17:50:43,763 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 프로그램 시작
+2026-03-17 17:50:44,039 [INFO] __main__: UI 시작됨
+2026-03-17 17:52:09,638 [CRITICAL] services.device_service: 비상 정지 실행
+2026-03-17 17:52:09,639 [INFO] drivers.mock_driver: [MockDriver] 연결 해제
+2026-03-17 17:52:09,640 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 프로그램 종료

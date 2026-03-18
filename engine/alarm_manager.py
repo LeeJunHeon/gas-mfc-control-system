@@ -2,6 +2,7 @@
 engine/alarm_manager.py
 알람 생성/관리 + 파일 로깅
 
+PySide6 제거 → 콜백 기반 이벤트 시스템
 로그 파일: data/logs/YYYY-MM-DD_system.log
 """
 from __future__ import annotations
@@ -11,20 +12,15 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable
 
-from PySide6.QtCore import QObject, Signal
-
 from app.models import Alarm, AlarmLevel
 
 logger = logging.getLogger(__name__)
 
 
-class AlarmManager(QObject):
-    """알람 관리 + Qt Signal 발행"""
-
-    alarm_raised = Signal(object)   # Alarm 객체
+class AlarmManager:
+    """알람 관리 + 콜백 기반 알림"""
 
     def __init__(self, log_dir: Path):
-        super().__init__()
         self._log_dir = log_dir
         self._active_alarms: list[Alarm] = []
         self._history: list[Alarm] = []
@@ -53,6 +49,22 @@ class AlarmManager(QObject):
             handler.setFormatter(fmt)
             self._file_logger.addHandler(handler)
 
+    # ── 콜백 등록 ────────────────────────────────────
+
+    def on_alarm(self, callback: Callable[[Alarm], None]):
+        """알람 발생 시 호출될 콜백 등록"""
+        self._callbacks.append(callback)
+
+    def _notify(self, alarm: Alarm):
+        """등록된 콜백에 알람 전달"""
+        for cb in self._callbacks:
+            try:
+                cb(alarm)
+            except Exception as e:
+                logger.error(f"알람 콜백 오류: {e}")
+
+    # ── 알람 발생 ────────────────────────────────────
+
     def raise_alarm(self, level: AlarmLevel, message: str, source: str = "System"):
         """알람 발생"""
         ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -73,8 +85,8 @@ class AlarmManager(QObject):
         elif level == AlarmLevel.CRITICAL:
             self._file_logger.critical(log_msg)
 
-        # Qt Signal
-        self.alarm_raised.emit(alarm)
+        # 콜백 알림
+        self._notify(alarm)
         logger.debug(f"알람: [{level.value}] {source}: {message}")
 
     def info(self, message: str, source: str = "System"):

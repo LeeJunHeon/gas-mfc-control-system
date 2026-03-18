@@ -1,12 +1,12 @@
 """
 main.py
-애플리케이션 진입점
+애플리케이션 진입점 (pywebview 기반)
 
 실행:
     python main.py
 
 PyInstaller 단일 exe 패키징:
-    pyinstaller --onefile --windowed --add-data "data;data" --add-data "ui/style.qss;ui" main.py
+    pyinstaller --onefile --windowed --add-data "data;data" --add-data "ui;ui" main.py
 """
 import sys
 import logging
@@ -17,7 +17,7 @@ from datetime import datetime
 ROOT = Path(__file__).parent
 sys.path.insert(0, str(ROOT))
 
-from PySide6.QtWidgets import QApplication, QMessageBox
+import webview
 
 from app.config import AppConfig, LOG_DIR
 from calculation.gas_correction import GasCorrection
@@ -28,7 +28,7 @@ from services.data_logger import DataLogger
 from engine.recipe_engine import RecipeEngine
 from engine.interlock import Interlock
 from engine.alarm_manager import AlarmManager
-from ui.main_window import MainWindow
+from ui.api import GasControlApi
 
 
 def setup_logging():
@@ -96,9 +96,9 @@ def build_app():
     data_logger.cleanup_old_logs(keep_days=30)
 
     # 알람, 인터락, 엔진
-    alarm    = AlarmManager(log_dir=config.log_dir)
+    alarm     = AlarmManager(log_dir=config.log_dir)
     interlock = Interlock(channels=config.channels)
-    engine   = RecipeEngine(
+    engine    = RecipeEngine(
         device=device, calculator=flow_calc,
         interlock=interlock, alarm=alarm,
         data_logger=data_logger,
@@ -114,35 +114,38 @@ def main():
     log.info("GAS Control System 시작")
     log.info("=" * 60)
 
-    app = QApplication(sys.argv)
-    app.setApplicationName("GAS Control System")
-    app.setOrganizationName("GCS")
-
-    # QSS 스타일 로드
-    qss_path = ROOT / "ui" / "style.qss"
-    if qss_path.exists():
-        app.setStyleSheet(qss_path.read_text(encoding="utf-8"))
-    else:
-        log.warning(f"스타일시트 없음: {qss_path}")
-
-    # 객체 조립
     try:
         config, device, engine, alarm, flow_calc, data_logger = build_app()
     except Exception as e:
-        QMessageBox.critical(None, "초기화 오류",
-                             f"프로그램 초기화 중 오류:\n{e}")
         log.critical(f"초기화 실패: {e}", exc_info=True)
         sys.exit(1)
 
-    # 메인 윈도우
-    window = MainWindow(
-        config=config, device=device,
-        engine=engine, alarm=alarm, flow_calc=flow_calc,
-    )
-    window.show()
+    # 장비 연결
+    device.connect()
+    drv = config.hardware.get("driver_type", "mock")
+    if drv == "mock":
+        alarm.info("시뮬레이션 모드 시작 (Mock Driver)", "System")
+    else:
+        alarm.info("실제 장비 연결됨", "System")
+    alarm.info("프로그램 시작", "System")
 
-    log.info("UI 시작됨")
-    sys.exit(app.exec())
+    # API 브릿지
+    api = GasControlApi(device, engine, alarm, flow_calc, config)
+
+    # pywebview 윈도우
+    window = webview.create_window(
+        'GAS Control System v1.0',
+        url='ui/index.html',
+        js_api=api,
+        width=1280,
+        height=820,
+        min_size=(1024, 700),
+    )
+    api.set_window(window)
+    window.events.closing += lambda: api.shutdown()
+
+    log.info("UI 시작됨 (pywebview)")
+    webview.start(debug=False)
 
 
 if __name__ == "__main__":

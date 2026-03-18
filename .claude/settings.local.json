@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm -rf ui/__pycache__ ui/widgets/__pycache__)",
+      "Bash(rm -f ui/style.qss ui/hmi_panel.py ui/process_panel.py ui/recipe_panel.py ui/main_window.py ui/log_panel.py ui/settings_dialog.py)",
+      "Bash(rm -rf ui/widgets)",
+      "Bash(rm -f ui/__init__.py)",
+      "Bash(python -c \"import ast; [ast.parse\\(open\\(f\\).read\\(\\)\\) for f in [''main.py'',''ui/api.py'',''engine/recipe_engine.py'',''engine/alarm_manager.py'']]\")",
+      "Bash(python -c \"import ast; [ast.parse\\(open\\(f, encoding=''utf-8''\\).read\\(\\)\\) for f in [''main.py'',''ui/api.py'',''engine/recipe_engine.py'',''engine/alarm_manager.py'']]\")"
+    ]
+  }
+}

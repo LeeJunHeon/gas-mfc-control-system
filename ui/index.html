@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAS Control System</title>
+<style>
+/* ─── 전역 변수 ─── */
+:root {
+  --bg: #f0f2f5;
+  --panel: #ffffff;
+  --header: #2c3e50;
+  --accent: #2980b9;
+  --text: #2c3e50;
+  --text-muted: #5d6d7e;
+  --border: #bdc3c7;
+  --green: #27ae60;
+  --red: #e74c3c;
+  --orange: #e67e22;
+  --purple: #8e44ad;
+  --dark-red: #922b21;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: "Malgun Gothic","맑은 고딕","Segoe UI",sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg);
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── 헤더 ─── */
+.header {
+  background: linear-gradient(90deg, #2c3e50, #34495e);
+  color: #fff;
+  padding: 0 16px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid var(--accent);
+  flex-shrink: 0;
+}
+.header h1 { font-size: 18px; font-weight: bold; }
+.header .spacer { flex:1; }
+.header .alarm-badge {
+  color: var(--red); font-weight: bold; font-size: 13px;
+  margin-right: 12px;
+}
+.header .driver-badge {
+  padding: 3px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+  color: #fff;
+}
+.driver-badge.sim { background: var(--orange); }
+.driver-badge.real { background: var(--green); }
+
+/* ─── 탭 ─── */
+.tabs {
+  display: flex;
+  background: #dde1e6;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.tab {
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all .15s;
+}
+.tab:hover { background: #c8cdd3; }
+.tab.active {
+  color: #fff;
+  background: var(--header);
+  border-bottom-color: var(--accent);
+}
+
+/* ─── 탭 콘텐츠 ─── */
+.tab-content { flex:1; overflow:hidden; position:relative; }
+.tab-pane {
+  display:none; position:absolute; inset:0;
+  overflow-y:auto; padding:10px;
+}
+.tab-pane.active { display:block; }
+
+/* ─── 카드 ─── */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.card-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--accent);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #eee;
+}
+
+/* ─── 버튼 ─── */
+.btn {
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 8px 16px;
+  transition: opacity .15s;
+}
+.btn:hover { opacity:.85; }
+.btn:disabled { opacity:.4; cursor:not-allowed; }
+.btn-green  { background:var(--green); }
+.btn-red    { background:var(--red); }
+.btn-purple { background:var(--purple); }
+.btn-danger { background:var(--dark-red); border:2px solid var(--red); }
+.btn-blue   { background:var(--accent); }
+.btn-sm     { font-size:12px; padding:5px 10px; }
+
+/* ─── 상태 배너 ─── */
+.status-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  height: 52px;
+}
+.led {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #bdc3c7;
+  flex-shrink: 0;
+}
+.led.green  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.led.orange { background: var(--orange); box-shadow: 0 0 6px var(--orange); }
+.led.red    { background: var(--red); box-shadow: 0 0 6px var(--red); }
+.led.blue   { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.led.yellow { background: #f1c40f; box-shadow: 0 0 6px #f1c40f; }
+.status-text { font-size:20px; font-weight:bold; }
+
+/* ─── HMI 채널 Row ─── */
+.channel-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 78px;
+  padding: 0 6px;
+  border-bottom: 1px solid #eee;
+}
+.channel-row.disabled { opacity:.4; pointer-events:none; }
+.pipe {
+  height: 4px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.valve-btn {
+  width: 56px; height: 56px;
+  border: 2px solid #95a5a6;
+  border-radius: 6px;
+  background: #eaecee;
+  color: #5d6d7e;
+  font-size: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all .15s;
+}
+.valve-btn.open {
+  background: #d5f5e3;
+  border-color: var(--green);
+  color: #1e8449;
+}
+.mfc-box {
+  width: 155px;
+  border: 2px solid #3498db;
+  border-radius: 4px;
+  background: #fff;
+  padding: 3px 5px;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.mfc-box .mfc-name { text-align:center; font-weight:bold; font-size:11px; }
+.mfc-row { display:flex; align-items:center; gap:2px; }
+.mfc-pv {
+  background:#d1f2eb; color:#0e6655;
+  font-family:Consolas,monospace; font-weight:bold; font-size:12px;
+  padding:1px 4px; border-radius:2px; text-align:right; flex:1;
+}
+.mfc-sv {
+  background:#fdebd0; color:#935116;
+  font-family:Consolas,monospace; font-weight:bold; font-size:12px;
+  padding:1px 4px; border-radius:2px; text-align:right; flex:1;
+}
+.mfc-max { color:var(--red); font-size:10px; text-align:right; }
+
+/* ─── 4-way 영역 ─── */
+.fourway-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+}
+.fourway-btn {
+  width: 130px; height: 34px;
+  border: 2px solid #bdc3c7;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 12px;
+  background: #eee;
+  color: var(--text);
+}
+.fourway-btn.active {
+  background: var(--green);
+  border-color: #229954;
+  color: #fff;
+}
+
+/* ─── 프로그레스 바 ─── */
+.progress-wrap {
+  display: flex; align-items: center; gap: 8px;
+}
+.progress-bar {
+  flex:1; height:24px; background:#e8eaed;
+  border:1px solid var(--border); border-radius:4px;
+  overflow:hidden; position:relative;
+}
+.progress-bar .fill {
+  height:100%; background:var(--orange);
+  border-radius:3px; transition:width .3s;
+  width:0%;
+}
+.progress-bar .label {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:bold; color:var(--text);
+}
+.countdown {
+  width:72px; text-align:center;
+  font-size:16px; font-weight:bold;
+  font-family:Consolas,monospace;
+  color:var(--orange);
+  background:#fff; border:1px solid var(--border);
+  border-radius:4px; padding:2px;
+}
+
+/* ─── PV 바 ─── */
+.pv-row {
+  display:flex; align-items:center; gap:8px;
+  padding:3px 4px;
+}
+.pv-name { width:60px; font-weight:bold; font-size:12px; }
+.pv-bar-wrap {
+  flex:1; height:18px; background:#e8eaed;
+  border:1px solid var(--border); border-radius:4px;
+  overflow:hidden;
+}
+.pv-bar-fill {
+  height:100%; border-radius:3px; transition:width .3s; width:0%;
+}
+.pv-val {
+  min-width:56px; text-align:right;
+  background:#1a1a1a; color:#00e5cc;
+  font-weight:bold; font-size:12px;
+  font-family:Consolas,monospace;
+  border-radius:3px; padding:1px 4px;
+}
+.sv-val {
+  min-width:56px; text-align:right;
+  color:#f39c12; font-weight:bold; font-size:11px;
+  font-family:Consolas,monospace;
+}
+
+/* ─── 알람 바 ─── */
+.alarm-bar {
+  display:flex; align-items:center; gap:8px;
+  padding:8px 12px;
+}
+
+/* ─── 상태바 ─── */
+.statusbar {
+  background: var(--header);
+  color: #ecf0f1;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 11px;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.statusbar .sep { color:#95a5a6; }
+
+/* ─── 2x2 그리드 ─── */
+.btn-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.btn-grid .btn-big { height:52px; font-size:15px; }
+.btn-grid .btn-med { height:44px; }
+
+/* ─── 테이블 ─── */
+.recipe-table {
+  width:100%; border-collapse:collapse;
+  font-size:12px;
+}
+.recipe-table th {
+  background:var(--header); color:#fff;
+  padding:6px 4px; font-size:11px; text-align:center;
+  border:1px solid #1a252f;
+}
+.recipe-table td {
+  padding:4px; text-align:center;
+  border:1px solid #d5d8dc;
+}
+.recipe-table tr:nth-child(even) { background:#f7f9fc; }
+.recipe-table tr.selected { background:#dbeeff; }
+.recipe-table td input, .recipe-table td select {
+  width:100%; border:1px solid #bdc3c7;
+  border-radius:3px; padding:2px 4px;
+  font-size:12px; text-align:center;
+  background:#fff; color:var(--text);
+}
+
+/* ─── 미리보기 ─── */
+.preview-box {
+  background:#f7f9fb; color:var(--text);
+  font-family:Consolas,monospace; font-size:11px;
+  border:1px solid var(--border); border-radius:3px;
+  padding:8px; height:100px; overflow-y:auto;
+  white-space:pre;
+}
+
+/* ─── HMI 레이아웃 ─── */
+.hmi-layout {
+  display: flex;
+  gap: 0;
+  min-height: 100%;
+}
+.hmi-channels { flex:1; }
+.hmi-right {
+  width: 170px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.merge-pipe {
+  width: 4px;
+  background: #7f8c8d;
+  border-radius: 2px;
+  flex: 1;
+  min-height: 80px;
+}
+.section-label {
+  font-size:11px; font-weight:bold;
+  padding:4px 6px;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ 헤더 ═══ -->
+<div class="header">
+  <h1>⬡ GAS Control System</h1>
+  <div class="spacer"></div>
+  <span id="alarmBadge" class="alarm-badge"></span>
+  <span id="driverBadge" class="driver-badge sim">⚠ SIMULATION</span>
+</div>
+
+<!-- ═══ 탭 바 ═══ -->
+<div class="tabs">
+  <div class="tab active" data-tab="hmi">HMI</div>
+  <div class="tab" data-tab="recipe">레시피</div>
+  <div class="tab" data-tab="process">공정 실행</div>
+  <div class="tab" data-tab="log">로그</div>
+</div>
+
+<!-- ═══ 탭 콘텐츠 ═══ -->
+<div class="tab-content">
+
+  <!-- ── HMI 탭 ── -->
+  <div id="pane-hmi" class="tab-pane active">
+    <div class="hmi-layout">
+      <div class="hmi-channels" id="hmiChannels"></div>
+      <div class="hmi-right">
+        <div style="color:#7f8c8d;font-size:10px;">→ 합류</div>
+        <div class="merge-pipe"></div>
+        <div class="fourway-panel">
+          <div style="font-weight:bold;font-size:11px;color:var(--text);">4-way Valve</div>
+          <button class="fourway-btn active" id="btnVent" onclick="onFourwayClick('vent')">● VENT</button>
+          <button class="fourway-btn" id="btnChamber" onclick="onFourwayClick('chamber')">○ CHAMBER</button>
+          <div id="fourwayStatus" style="font-size:11px;color:var(--accent);font-weight:bold;">현재: VENT</div>
+        </div>
+        <hr style="width:100%;border:none;border-top:1px solid #bdc3c7;">
+        <button class="btn btn-blue btn-sm" style="width:100%;" onclick="onOpenAllVA()">전체 VA Open</button>
+        <button class="btn btn-blue btn-sm" style="width:100%;" onclick="onCloseAll()">전체 닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 레시피 탭 ── -->
+  <div id="pane-recipe" class="tab-pane">
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
+      <b>레시피:</b>
+      <input id="recipeName" type="text" value="New Recipe" style="width:200px;height:30px;border:1px solid #bdc3c7;border-radius:3px;padding:0 8px;">
+      <button class="btn btn-blue btn-sm" onclick="newRecipe()">New</button>
+      <button class="btn btn-blue btn-sm" onclick="openRecipe()">Open…</button>
+      <button class="btn btn-blue btn-sm" onclick="saveRecipe()">Save</button>
+      <button class="btn btn-blue btn-sm" onclick="saveAsRecipe()">Save As…</button>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:6px;font-size:12px;">
+      <label>Loop: <input id="loopCount" type="number" value="1" min="1" max="999" style="width:55px;"></label>
+      <label>Interval(s): <input id="loopInterval" type="number" value="0" min="0" style="width:65px;"></label>
+      <label>버블러(°C): <input id="bubblerTemp" type="number" value="25" step="0.1" min="0" max="80" style="width:60px;"></label>
+    </div>
+    <div style="overflow-x:auto;margin-bottom:6px;">
+      <table class="recipe-table" id="stepTable">
+        <thead id="stepTableHead"></thead>
+        <tbody id="stepTableBody"></tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:4px;margin-bottom:6px;">
+      <button class="btn btn-blue btn-sm" onclick="addStep()">+ 스텝 추가</button>
+      <button class="btn btn-red btn-sm" onclick="deleteStep()">- 스텝 삭제</button>
+      <button class="btn btn-blue btn-sm" onclick="moveStep(-1)">▲ 위로</button>
+      <button class="btn btn-blue btn-sm" onclick="moveStep(1)">▼ 아래로</button>
+    </div>
+    <div class="card">
+      <div class="card-title">MFC Setpoint 미리보기 (선택된 스텝)</div>
+      <div class="preview-box" id="previewBox">스텝을 선택하세요...</div>
+    </div>
+  </div>
+
+  <!-- ── 공정 실행 탭 ── -->
+  <div id="pane-process" class="tab-pane">
+    <div class="status-banner">
+      <div class="led" id="stateLed"></div>
+      <span class="status-text" id="stateText">대기</span>
+      <span style="color:#5d6d7e;font-size:12px;font-weight:bold;" id="loopLabel">루프: -/-</span>
+      <span style="color:#5d6d7e;font-size:12px;font-weight:bold;" id="stepLabel">스텝: -</span>
+      <div style="flex:1;"></div>
+      <span style="color:var(--accent);font-size:12px;font-weight:bold;" id="recipeLabel"></span>
+    </div>
+
+    <div class="btn-grid">
+      <button class="btn btn-green btn-big" id="btnRun" onclick="runRecipe()">▶  AUTO RUN</button>
+      <button class="btn btn-red btn-big" id="btnStop" disabled onclick="stopRecipe()">■  STOP</button>
+      <button class="btn btn-purple btn-med" onclick="onPurge()">PURGE</button>
+      <button class="btn btn-danger btn-med" onclick="onEmergencyStop()">⚠  비상 정지</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">공정 타이머</div>
+      <div class="progress-wrap">
+        <span style="width:36px;color:var(--orange);font-weight:bold;">준비</span>
+        <div class="progress-bar">
+          <div class="fill" id="prepFill"></div>
+          <div class="label" id="prepLabel">0 / 0 s</div>
+        </div>
+        <div class="countdown" id="prepCountdown">--:--</div>
+      </div>
+    </div>
+
+    <div class="card" style="flex:1;display:flex;flex-direction:column;">
+      <div class="card-title">MFC 실시간 유량 ( PV / SV )</div>
+      <div id="pvBars" style="flex:1;overflow-y:auto;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">알람</div>
+      <div class="alarm-bar">
+        <div class="led" id="alarmLed"></div>
+        <span id="alarmText" style="flex:1;">정상</span>
+        <button class="btn btn-blue btn-sm" onclick="onAckAlarm()">알람 확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 로그 탭 ── -->
+  <div id="pane-log" class="tab-pane">
+    <div class="card" style="height:100%;display:flex;flex-direction:column;">
+      <div class="card-title">시스템 로그</div>
+      <div id="logArea" style="flex:1;overflow-y:auto;font-family:Consolas,monospace;font-size:11px;background:#fafbfc;padding:8px;border:1px solid #bdc3c7;border-radius:3px;white-space:pre-wrap;"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══ 상태바 ═══ -->
+<div class="statusbar">
+  <span id="sbState">상태: 대기</span>
+  <span class="sep">|</span>
+  <span id="sbRecipe">레시피: —</span>
+  <span style="flex:1;"></span>
+  <span id="sbTime"></span>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  전역 상태
+// ═══════════════════════════════════════════════════
+let channels = [];
+let gasChannels = [];
+let selectedRow = -1;
+let logLines = [];
+let pvPollTimer = null;
+
+// ═══════════════════════════════════════════════════
+//  초기화 — pywebview 준비 후 실행
+// ═══════════════════════════════════════════════════
+window.addEventListener('pywebviewready', async () => {
+  // 채널 정보 로드 (GasControlApi.get_channels → list[dict])
+  channels = await pywebview.api.get_channels();
+  gasChannels = channels.filter(c => !c.is_balance && c.enabled);
+
+  // 드라이버 모드 표시
+  const mode = await pywebview.api.get_driver_mode();
+  const badge = document.getElementById('driverBadge');
+  if (mode === 'mock') {
+    badge.textContent = '⚠ SIMULATION';
+    badge.className = 'driver-badge sim';
+  } else {
+    badge.textContent = '● CONNECTED';
+    badge.className = 'driver-badge real';
+  }
+
+  // UI 빌드
+  buildHmi();
+  buildPvBars();
+  buildRecipeTable();
+  addStep();
+
+  // 1초마다 PV/밸브 상태 폴링 시작
+  pvPollTimer = setInterval(refreshPV, 1000);
+
+  // 시계
+  setInterval(() => {
+    document.getElementById('sbTime').textContent =
+      new Date().toLocaleString('ko-KR');
+  }, 1000);
+});
+
+// ═══════════════════════════════════════════════════
+//  PV/밸브 주기 폴링 (1초 간격, JS 주도)
+// ═══════════════════════════════════════════════════
+async function refreshPV() {
+  try {
+    // PV 읽기 → UI 갱신
+    const pv = await pywebview.api.get_all_pv();
+    for (const [k, v] of Object.entries(pv)) {
+      updatePvDisplay(k, v);
+    }
+
+    // 밸브 상태 읽기 → UI 갱신
+    const valves = await pywebview.api.get_valve_states();
+    for (const [k, v] of Object.entries(valves)) {
+      updateVADisplay(k, v.va);
+      updateSOLDisplay(k, v.sol);
+    }
+
+    // 4-way 상태 읽기
+    const fw = await pywebview.api.get_fourway();
+    updateFourwayDisplay(fw);
+  } catch (e) {
+    // 윈도우 닫히는 중이면 무시
+  }
+}
+
+function updatePvDisplay(chIdx, value) {
+  // 공정실행 탭 PV 바
+  const pvEl = document.getElementById('pv-' + chIdx);
+  if (pvEl) pvEl.textContent = value.toFixed(1);
+
+  // HMI 탭 MFC PV
+  const hmiPv = document.getElementById('hmi-pv-' + chIdx);
+  if (hmiPv) hmiPv.textContent = value.toFixed(1);
+
+  // PV 바 fill
+  const ch = channels.find(c => c.idx === parseInt(chIdx));
+  if (ch) {
+    const bar = document.getElementById('pvbar-' + chIdx);
+    if (bar) bar.style.width = Math.min(100, value / ch.full_scale_sccm * 100) + '%';
+  }
+}
+
+function updateVADisplay(chIdx, isOpen) {
+  const el = document.getElementById('va-' + chIdx);
+  if (el) el.classList.toggle('open', isOpen);
+}
+
+function updateSOLDisplay(chIdx, isOpen) {
+  const el = document.getElementById('sol-' + chIdx);
+  if (el) el.classList.toggle('open', isOpen);
+}
+
+function updateSvDisplay(chIdx, value) {
+  const el = document.getElementById('sv-' + chIdx);
+  if (el) el.textContent = '/ ' + value.toFixed(1);
+  const hmiSv = document.getElementById('hmi-sv-' + chIdx);
+  if (hmiSv) hmiSv.textContent = value.toFixed(1);
+}
+
+function updateFourwayDisplay(pos) {
+  const v = document.getElementById('btnVent');
+  const c = document.getElementById('btnChamber');
+  v.classList.toggle('active', pos === 'vent');
+  c.classList.toggle('active', pos === 'chamber');
+  v.textContent = pos === 'vent' ? '● VENT' : '○ VENT';
+  c.textContent = pos === 'chamber' ? '● CHAMBER' : '○ CHAMBER';
+  document.getElementById('fourwayStatus').textContent = '현재: ' + pos.toUpperCase();
+}
+
+// ═══════════════════════════════════════════════════
+//  탭 전환
+// ═══════════════════════════════════════════════════
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('pane-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+// ═══════════════════════════════════════════════════
+//  HMI 빌드
+// ═══════════════════════════════════════════════════
+function buildHmi() {
+  const wrap = document.getElementById('hmiChannels');
+  wrap.innerHTML = '';
+
+  const addSection = (label, color) => {
+    const d = document.createElement('div');
+    d.className = 'section-label';
+    d.style.color = color;
+    d.textContent = '── ' + label + ' ──';
+    wrap.appendChild(d);
+  };
+
+  addSection('Air Lines', '#2980b9');
+  channels.slice(0, 4).forEach(ch => wrap.appendChild(makeChannelRow(ch)));
+  addSection('Gas Lines', '#e74c3c');
+  channels.slice(4).forEach(ch => wrap.appendChild(makeChannelRow(ch)));
+}
+
+function makeChannelRow(ch) {
+  const row = document.createElement('div');
+  row.className = 'channel-row' + (ch.enabled ? '' : ' disabled');
+  row.id = 'ch-row-' + ch.idx;
+
+  const conc = ch.source_conc_ppm > 0 ? ' (' + ch.source_conc_ppm + 'ppm)' : '';
+
+  row.innerHTML =
+    '<input type="checkbox" ' + (ch.enabled ? 'checked' : '') +
+    ' title="활성화" onchange="toggleChannel(' + ch.idx + ', this.checked)">' +
+    '<span style="width:50px;text-align:right;font-weight:bold;font-size:12px;color:' + ch.color + ';">' + ch.name + '</span>' +
+    '<div class="pipe" style="width:20px;background:' + ch.color + ';"></div>' +
+    '<button class="valve-btn" id="va-' + ch.idx + '" onclick="onVAClick(' + ch.idx + ')" title="VA' + (ch.idx+1) + '">' +
+      '<span style="font-size:14px;">⋈</span>VA' + (ch.idx+1) +
+    '</button>' +
+    '<div class="pipe" style="width:10px;background:' + ch.color + ';"></div>' +
+    '<div class="mfc-box" style="border-color:' + ch.color + ';">' +
+      '<div class="mfc-name" style="color:' + ch.color + ';">' + ch.name + conc + '</div>' +
+      '<div class="mfc-row"><span style="color:#0e6655;font-size:10px;font-weight:bold;">PV</span>' +
+        '<span class="mfc-pv" id="hmi-pv-' + ch.idx + '">0.0</span><span style="color:#7f8c8d;font-size:9px;">sccm</span></div>' +
+      '<div class="mfc-row"><span style="color:#935116;font-size:10px;font-weight:bold;">SV</span>' +
+        '<span class="mfc-sv" id="hmi-sv-' + ch.idx + '">0.0</span><span style="color:#7f8c8d;font-size:9px;">sccm</span></div>' +
+      '<div class="mfc-max">MAX: ' + ch.full_scale_sccm + ' sccm</div>' +
+    '</div>' +
+    '<div class="pipe" style="width:10px;background:' + ch.color + ';"></div>' +
+    '<button class="valve-btn" id="sol-' + ch.idx + '" onclick="onSOLClick(' + ch.idx + ')" title="S' + (ch.idx+1) + '">' +
+      '<span style="font-size:14px;">◆</span>S' + (ch.idx+1) +
+    '</button>' +
+    '<div class="pipe" style="flex:1;min-width:16px;background:' + ch.color + ';"></div>';
+
+  return row;
+}
+
+// ═══════════════════════════════════════════════════
+//  HMI 밸브/제어 조작 → pywebview API 호출
+// ═══════════════════════════════════════════════════
+async function onVAClick(chIdx) {
+  const newState = await pywebview.api.toggle_va_valve(chIdx);
+  updateVADisplay(chIdx, newState);
+}
+
+async function onSOLClick(chIdx) {
+  const newState = await pywebview.api.toggle_sol_valve(chIdx);
+  updateSOLDisplay(chIdx, newState);
+}
+
+async function onFourwayClick(pos) {
+  await pywebview.api.set_fourway(pos);
+  updateFourwayDisplay(pos);
+}
+
+async function onOpenAllVA() {
+  await pywebview.api.open_all_va();
+  await refreshPV(); // 즉시 상태 반영
+}
+
+async function onCloseAll() {
+  await pywebview.api.close_all();
+  await refreshPV();
+}
+
+function toggleChannel(idx, enabled) {
+  const row = document.getElementById('ch-row-' + idx);
+  if (row) row.classList.toggle('disabled', !enabled);
+}
+
+// ═══════════════════════════════════════════════════
+//  PV 바 빌드 (공정 실행 탭)
+// ═══════════════════════════════════════════════════
+function buildPvBars() {
+  const wrap = document.getElementById('pvBars');
+  wrap.innerHTML = '';
+  channels.filter(c => c.enabled).forEach(ch => {
+    wrap.innerHTML +=
+      '<div class="pv-row">' +
+        '<span class="pv-name" style="color:' + ch.color + ';">' + ch.name + '</span>' +
+        '<div class="pv-bar-wrap">' +
+          '<div class="pv-bar-fill" id="pvbar-' + ch.idx + '" style="background:' + ch.color + ';"></div>' +
+        '</div>' +
+        '<span class="pv-val" id="pv-' + ch.idx + '">0.0</span>' +
+        '<span class="sv-val" id="sv-' + ch.idx + '">/ 0.0</span>' +
+        '<span style="color:#7f8c8d;font-size:10px;">sccm</span>' +
+      '</div>';
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  레시피 테이블
+// ═══════════════════════════════════════════════════
+function buildRecipeTable() {
+  const thead = document.getElementById('stepTableHead');
+  let hdr = '<tr><th>스텝</th><th>Total Flow<br>(sccm)</th><th>Humidity<br>(%)</th>';
+  gasChannels.forEach(c => {
+    const conc = c.source_conc_ppm > 0 ? c.source_conc_ppm : 'pure';
+    hdr += '<th>' + c.name + '<br>(' + conc + ')</th>';
+  });
+  hdr += '<th>준비(s)</th><th>측정(s)</th><th>반복</th><th>4-way</th></tr>';
+  thead.innerHTML = hdr;
+}
+
+function addStep() {
+  const tbody = document.getElementById('stepTableBody');
+  const rowNum = tbody.rows.length + 1;
+  let html = '<td><input value="P' + rowNum + '" style="width:40px;"></td>';
+  html += '<td><input type="number" value="200" style="width:70px;"></td>';
+  html += '<td><input type="number" value="0" style="width:60px;"></td>';
+  gasChannels.forEach(() => {
+    html += '<td><input type="number" value="0" style="width:60px;"></td>';
+  });
+  html += '<td><input type="number" value="60" style="width:55px;"></td>';
+  html += '<td><input type="number" value="120" style="width:55px;"></td>';
+  html += '<td><input type="number" value="1" style="width:40px;"></td>';
+  html += '<td><select><option>vent</option><option>chamber</option></select></td>';
+
+  const tr = document.createElement('tr');
+  tr.innerHTML = html;
+  tr.onclick = () => onRowSelect(tr);
+  tbody.appendChild(tr);
+}
+
+function deleteStep() {
+  const tbody = document.getElementById('stepTableBody');
+  if (selectedRow >= 0 && selectedRow < tbody.rows.length) {
+    tbody.deleteRow(selectedRow);
+    selectedRow = -1;
+    renumberSteps();
+  }
+}
+
+function moveStep(dir) {
+  const tbody = document.getElementById('stepTableBody');
+  const newIdx = selectedRow + dir;
+  if (selectedRow < 0 || newIdx < 0 || newIdx >= tbody.rows.length) return;
+  const row = tbody.rows[selectedRow];
+  const ref = dir < 0 ? tbody.rows[newIdx] : tbody.rows[newIdx].nextSibling;
+  tbody.insertBefore(row, ref);
+  selectedRow = newIdx;
+  renumberSteps();
+  highlightRow();
+}
+
+async function onRowSelect(tr) {
+  const tbody = document.getElementById('stepTableBody');
+  selectedRow = Array.from(tbody.rows).indexOf(tr);
+  highlightRow();
+
+  // Setpoint 미리보기 계산
+  const stepDict = getStepDict(tr);
+  if (stepDict) {
+    const preview = await pywebview.api.calc_setpoints_preview(stepDict);
+    document.getElementById('previewBox').textContent = preview;
+  }
+}
+
+function getStepDict(tr) {
+  const inputs = tr.querySelectorAll('input');
+  const sel = tr.querySelector('select');
+  if (!inputs.length) return null;
+
+  const gasTargets = {};
+  gasChannels.forEach((c, i) => {
+    gasTargets[c.idx] = parseFloat(inputs[3 + i]?.value) || 0;
+  });
+  const off = 3 + gasChannels.length;
+  return {
+    step_id: inputs[0].value,
+    total_flow_sccm: parseFloat(inputs[1].value) || 0,
+    humidity_pct: parseFloat(inputs[2].value) || 0,
+    gas_targets: gasTargets,
+    prepare_sec: parseInt(inputs[off]?.value) || 0,
+    measure_sec: parseInt(inputs[off + 1]?.value) || 0,
+    repeat: parseInt(inputs[off + 2]?.value) || 1,
+    fourway: sel?.value || 'vent',
+  };
+}
+
+function highlightRow() {
+  const tbody = document.getElementById('stepTableBody');
+  Array.from(tbody.rows).forEach((r, i) => {
+    r.classList.toggle('selected', i === selectedRow);
+  });
+}
+
+function renumberSteps() {
+  const tbody = document.getElementById('stepTableBody');
+  Array.from(tbody.rows).forEach((r, i) => {
+    r.cells[0].querySelector('input').value = 'P' + (i + 1);
+  });
+}
+
+function buildRecipeDict() {
+  const tbody = document.getElementById('stepTableBody');
+  const steps = [];
+  Array.from(tbody.rows).forEach(r => {
+    const d = getStepDict(r);
+    if (d) steps.push(d);
+  });
+  return {
+    name: document.getElementById('recipeName').value,
+    schema_version: 1,
+    loop_count: parseInt(document.getElementById('loopCount').value) || 1,
+    interval_sec: parseInt(document.getElementById('loopInterval').value) || 0,
+    bubbler_temp_c: parseFloat(document.getElementById('bubblerTemp').value) || 25,
+    system_pressure_kpa: 101.3,
+    steps: steps,
+  };
+}
+
+// ── 레시피 파일 I/O ──
+function newRecipe() {
+  document.getElementById('recipeName').value = 'New Recipe';
+  document.getElementById('loopCount').value = 1;
+  document.getElementById('loopInterval').value = 0;
+  document.getElementById('bubblerTemp').value = 25;
+  document.getElementById('stepTableBody').innerHTML = '';
+  addStep();
+  document.getElementById('previewBox').textContent = '스텝을 선택하세요...';
+}
+
+async function openRecipe() {
+  const r = await pywebview.api.open_recipe_dialog();
+  if (r && r.ok) loadRecipeData(r.data);
+}
+
+function loadRecipeData(d) {
+  document.getElementById('recipeName').value = d.name || '';
+  document.getElementById('loopCount').value = d.loop_count || 1;
+  document.getElementById('loopInterval').value = d.interval_sec || 0;
+  document.getElementById('bubblerTemp').value = d.bubbler_temp_c || 25;
+  document.getElementById('stepTableBody').innerHTML = '';
+  (d.steps || []).forEach(s => {
+    addStep();
+    const tbody = document.getElementById('stepTableBody');
+    const row = tbody.rows[tbody.rows.length - 1];
+    const inputs = row.querySelectorAll('input');
+    const sel = row.querySelector('select');
+    inputs[0].value = s.step_id || '';
+    inputs[1].value = s.total_flow_sccm || 0;
+    inputs[2].value = s.humidity_pct || 0;
+    gasChannels.forEach((c, i) => {
+      if (inputs[3 + i]) inputs[3 + i].value = (s.gas_targets || {})[c.idx] || 0;
+    });
+    const off = 3 + gasChannels.length;
+    if (inputs[off]) inputs[off].value = s.prepare_sec || 0;
+    if (inputs[off+1]) inputs[off+1].value = s.measure_sec || 0;
+    if (inputs[off+2]) inputs[off+2].value = s.repeat || 1;
+    if (sel) sel.value = s.fourway || 'vent';
+  });
+}
+
+async function saveRecipe() {
+  const recipe = buildRecipeDict();
+  const filename = recipe.name.replace(/\s+/g, '_') + '.json';
+  const r = await pywebview.api.save_recipe(recipe, filename);
+  if (r && !r.ok) alert('저장 실패: ' + r.error);
+}
+
+async function saveAsRecipe() {
+  const json = JSON.stringify(buildRecipeDict(), null, 2);
+  await pywebview.api.save_recipe_dialog(json);
+}
+
+// ═══════════════════════════════════════════════════
+//  공정 제어 → pywebview API 호출
+// ═══════════════════════════════════════════════════
+async function runRecipe() {
+  const recipe = buildRecipeDict();
+  const r = await pywebview.api.start_recipe(recipe);
+  if (!r || !r.ok) {
+    alert(r ? r.error : '실행 실패');
+    return;
+  }
+  // 공정 실행 탭으로 전환
+  document.querySelector('[data-tab="process"]').click();
+  document.getElementById('recipeLabel').textContent = recipe.name;
+  document.getElementById('sbRecipe').textContent = '레시피: ' + recipe.name;
+}
+
+function stopRecipe() {
+  if (confirm('공정을 정지하시겠습니까?')) {
+    pywebview.api.stop_recipe();
+  }
+}
+
+function onEmergencyStop() {
+  if (confirm('즉시 모든 가스를 차단합니다! 계속?')) {
+    pywebview.api.emergency_stop();
+  }
+}
+
+function onPurge() {
+  pywebview.api.purge();
+}
+
+function onAckAlarm() {
+  pywebview.api.ack_alarm();
+}
+
+// ═══════════════════════════════════════════════════
+//  Python → JS 콜백 (엔진 이벤트 수신)
+//  api.py의 _js(evaluate_js) 로 호출됨
+// ═══════════════════════════════════════════════════
+const STATE_MAP = {
+  idle:     ['', '대기'],
+  step_prepare: ['orange', '준비 중'],
+  step_measure: ['green', '측정 중'],
+  stopping: ['yellow', '정지 중'],
+  emergency:['red', '비상 정지'],
+  purging:  ['blue', '퍼지 중'],
+};
+
+window.onStateChanged = (state) => {
+  const [color, text] = STATE_MAP[state] || ['', '?'];
+  document.getElementById('stateLed').className = 'led ' + color;
+  document.getElementById('stateText').textContent = text;
+  document.getElementById('sbState').textContent = '상태: ' + text;
+  const running = state !== 'idle';
+  document.getElementById('btnRun').disabled = running;
+  document.getElementById('btnStop').disabled = !running;
+};
+
+window.onStepStarted = (idx, id) => {
+  document.getElementById('stepLabel').textContent = '스텝: ' + id;
+  document.getElementById('prepFill').style.width = '0%';
+  document.getElementById('prepLabel').textContent = '0 / 0 s';
+  document.getElementById('prepCountdown').textContent = '--:--';
+};
+
+window.onStepFinished = (idx, id) => {
+  // 필요 시 UI 반영
+};
+
+window.onPrepareTick = (elapsed, total) => {
+  const pct = total > 0 ? (elapsed / total * 100) : 0;
+  document.getElementById('prepFill').style.width = pct + '%';
+  document.getElementById('prepLabel').textContent = elapsed + ' / ' + total + ' s';
+  const rem = Math.max(0, total - elapsed);
+  const m = String(Math.floor(rem / 60)).padStart(2, '0');
+  const s = String(rem % 60).padStart(2, '0');
+  document.getElementById('prepCountdown').textContent = m + ':' + s;
+};
+
+window.onMeasureTick = (elapsed, total) => {
+  // 측정 타이머 UI는 제거됨, 필요 시 여기에 추가
+};
+
+window.onLoopUpdated = (cur, tot) => {
+  document.getElementById('loopLabel').textContent = '루프: ' + cur + '/' + tot;
+};
+
+// 엔진에서 직접 푸시하는 PV/SV (레시피 실행 중)
+window.onPvUpdate = (pvs) => {
+  for (const [k, v] of Object.entries(pvs)) {
+    updatePvDisplay(k, v);
+  }
+};
+
+window.onSvUpdate = (svs) => {
+  for (const [k, v] of Object.entries(svs)) {
+    updateSvDisplay(k, v);
+  }
+};
+
+window.onValveUpdate = (states) => {
+  for (const [k, v] of Object.entries(states)) {
+    updateVADisplay(k, v.va);
+    updateSOLDisplay(k, v.sol);
+  }
+};
+
+window.onFourwayUpdate = (pos) => {
+  updateFourwayDisplay(pos);
+};
+
+window.onRecipeFinished = () => {
+  alert('레시피가 정상 완료되었습니다.');
+};
+
+window.onRecipeStopped = () => {
+  appendLog('[INFO] 레시피 정지됨');
+};
+
+window.onError = (msg) => {
+  alert('실행 오류: ' + msg);
+};
+
+window.onAlarm = (a) => {
+  const line = '[' + a.timestamp + '] [' + a.level + '] [' + a.source + '] ' + a.message;
+  appendLog(line);
+  document.getElementById('alarmText').textContent = '[' + a.level + '] ' + a.message;
+  const colors = { INFO:'blue', WARNING:'orange', ERROR:'red', CRITICAL:'red' };
+  document.getElementById('alarmLed').className = 'led ' + (colors[a.level] || '');
+  if (a.level === 'ERROR' || a.level === 'CRITICAL') {
+    document.getElementById('alarmBadge').textContent = '⚠ ' + a.message.slice(0, 40);
+  }
+};
+
+window.onAlarmAck = () => {
+  document.getElementById('alarmLed').className = 'led';
+  document.getElementById('alarmText').textContent = '정상';
+  document.getElementById('alarmBadge').textContent = '';
+};
+
+// ═══════════════════════════════════════════════════
+//  로그
+// ═══════════════════════════════════════════════════
+function appendLog(line) {
+  logLines.push(line);
+  if (logLines.length > 500) logLines.shift();
+  const el = document.getElementById('logArea');
+  el.textContent = logLines.join('\n');
+  el.scrollTop = el.scrollHeight;
+}
+</script>
+</body>
+</html>

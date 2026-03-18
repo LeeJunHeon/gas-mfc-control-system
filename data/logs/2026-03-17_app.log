@@ -44,3 +44,39 @@
 2026-03-17 17:52:09,638 [CRITICAL] services.device_service: 비상 정지 실행
 2026-03-17 17:52:09,639 [INFO] drivers.mock_driver: [MockDriver] 연결 해제
 2026-03-17 17:52:09,640 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 프로그램 종료
+2026-03-17 17:57:07,193 [INFO] __main__: ============================================================
+2026-03-17 17:57:07,193 [INFO] __main__: GAS Control System 시작
+2026-03-17 17:57:07,194 [INFO] __main__: ============================================================
+2026-03-17 17:57:07,298 [INFO] app.config: 가스 라이브러리 로드: 16종
+2026-03-17 17:57:07,299 [INFO] app.config: 채널 설정 로드: 8채널
+2026-03-17 17:57:07,988 [INFO] drivers.mock_driver: [MockDriver] 연결됨 (시뮬레이션 모드)
+2026-03-17 17:57:07,990 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 시뮬레이션 모드 시작 (Mock Driver)
+2026-03-17 17:57:07,990 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 프로그램 시작
+2026-03-17 17:57:08,241 [INFO] __main__: UI 시작됨
+2026-03-17 17:57:11,397 [CRITICAL] services.device_service: 비상 정지 실행
+2026-03-17 17:57:11,399 [INFO] drivers.mock_driver: [MockDriver] 연결 해제
+2026-03-17 17:57:11,407 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 프로그램 종료
+2026-03-17 18:01:15,784 [INFO] __main__: ============================================================
+2026-03-17 18:01:15,784 [INFO] __main__: GAS Control System 시작
+2026-03-17 18:01:15,785 [INFO] __main__: ============================================================
+2026-03-17 18:01:15,920 [INFO] app.config: 가스 라이브러리 로드: 16종
+2026-03-17 18:01:15,920 [INFO] app.config: 채널 설정 로드: 8채널
+2026-03-17 18:01:16,727 [INFO] drivers.mock_driver: [MockDriver] 연결됨 (시뮬레이션 모드)
+2026-03-17 18:01:16,730 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 시뮬레이션 모드 시작 (Mock Driver)
+2026-03-17 18:01:16,730 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 프로그램 시작
+2026-03-17 18:01:16,937 [INFO] __main__: UI 시작됨
+2026-03-17 18:01:23,109 [CRITICAL] services.device_service: 비상 정지 실행
+2026-03-17 18:01:23,110 [INFO] drivers.mock_driver: [MockDriver] 연결 해제
+2026-03-17 18:01:23,111 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 프로그램 종료
+2026-03-17 18:06:04,555 [INFO] __main__: ============================================================
+2026-03-17 18:06:04,555 [INFO] __main__: GAS Control System 시작
+2026-03-17 18:06:04,556 [INFO] __main__: ============================================================
+2026-03-17 18:06:04,642 [INFO] app.config: 가스 라이브러리 로드: 16종
+2026-03-17 18:06:04,643 [INFO] app.config: 채널 설정 로드: 8채널
+2026-03-17 18:06:05,660 [INFO] drivers.mock_driver: [MockDriver] 연결됨 (시뮬레이션 모드)
+2026-03-17 18:06:05,663 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 시뮬레이션 모드 시작 (Mock Driver)
+2026-03-17 18:06:05,663 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 프로그램 시작
+2026-03-17 18:06:05,923 [INFO] __main__: UI 시작됨
+2026-03-17 18:06:14,548 [CRITICAL] services.device_service: 비상 정지 실행
+2026-03-17 18:06:14,549 [INFO] drivers.mock_driver: [MockDriver] 연결 해제
+2026-03-17 18:06:14,550 [DEBUG] engine.alarm_manager: 알람: [INFO] System: 프로그램 종료

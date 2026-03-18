@@ -1,0 +1,24 @@
+__pycache__/
+*.py[cod]
+*.pyo
+
+.venv/
+venv/
+env/
+
+data/logs/
+*.log
+*.bak_*
+
+dist/
+build/
+*.spec
+
+.pytest_cache/
+.coverage
+
+.idea/
+.vscode/
+
+# 현장별 로컬 설정 분리 시
+data/config/hardware.local.json

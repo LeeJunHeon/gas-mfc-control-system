@@ -89,35 +89,35 @@ class RecipePanel(QWidget):
         toolbar.addStretch(1)
         root.addLayout(toolbar)
 
-        # ── 레시피 설정 ──────────────────────────────
-        cfg_group = QGroupBox("레시피 설정")
-        cfg_layout = QHBoxLayout(cfg_group)
+        # ── 레시피 설정 (컴팩트) ───────────────────────
+        cfg_row = QHBoxLayout()
+        cfg_row.setSpacing(6)
 
-        cfg_layout.addWidget(QLabel("Loop Count:"))
+        cfg_row.addWidget(QLabel("Loop:"))
         self._spin_loop = QSpinBox()
         self._spin_loop.setRange(1, 999)
         self._spin_loop.setValue(1)
-        self._spin_loop.setFixedWidth(70)
-        cfg_layout.addWidget(self._spin_loop)
+        self._spin_loop.setFixedWidth(60)
+        cfg_row.addWidget(self._spin_loop)
 
-        cfg_layout.addSpacing(20)
-        cfg_layout.addWidget(QLabel("Loop Interval (s):"))
+        cfg_row.addSpacing(8)
+        cfg_row.addWidget(QLabel("Interval(s):"))
         self._spin_interval = QSpinBox()
         self._spin_interval.setRange(0, 99999)
         self._spin_interval.setValue(0)
-        self._spin_interval.setFixedWidth(80)
-        cfg_layout.addWidget(self._spin_interval)
+        self._spin_interval.setFixedWidth(70)
+        cfg_row.addWidget(self._spin_interval)
 
-        cfg_layout.addSpacing(20)
-        cfg_layout.addWidget(QLabel("버블러 온도(°C):"))
+        cfg_row.addSpacing(8)
+        cfg_row.addWidget(QLabel("버블러(°C):"))
         self._spin_bubbler = QDoubleSpinBox()
         self._spin_bubbler.setRange(0, 80)
         self._spin_bubbler.setValue(25.0)
-        self._spin_bubbler.setFixedWidth(70)
-        cfg_layout.addWidget(self._spin_bubbler)
+        self._spin_bubbler.setFixedWidth(65)
+        cfg_row.addWidget(self._spin_bubbler)
 
-        cfg_layout.addStretch(1)
-        root.addWidget(cfg_group)
+        cfg_row.addStretch(1)
+        root.addLayout(cfg_row)
 
         # ── 스텝 테이블 ──────────────────────────────
         self._build_table()
@@ -145,11 +145,14 @@ class RecipePanel(QWidget):
         # ── Setpoint 미리보기 ─────────────────────────
         preview_group = QGroupBox("MFC Setpoint 미리보기 (선택된 스텝)")
         pv_layout = QVBoxLayout(preview_group)
+        pv_layout.setContentsMargins(6, 14, 6, 6)
         self._preview_text = QTextEdit()
         self._preview_text.setReadOnly(True)
-        self._preview_text.setFixedHeight(110)
+        self._preview_text.setFixedHeight(130)
         self._preview_text.setStyleSheet(
-            "background: #0a0a1a; color: #a0ffcc; font-family: Consolas, monospace; font-size: 11px;")
+            "background: #fafbfc; color: #2c3e50;"
+            "font-family: Consolas, monospace; font-size: 11px;"
+            "border: 1px solid #bdc3c7; border-radius: 3px;")
         pv_layout.addWidget(self._preview_text)
         root.addWidget(preview_group)
 
@@ -171,6 +174,19 @@ class RecipePanel(QWidget):
         self._table.setAlternatingRowColors(True)
         self._table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self._table.setMinimumHeight(250)
+
+        # 헤더 텍스트 줄바꿈 허용 + 높이 확보
+        header = self._table.horizontalHeader()
+        header.setDefaultAlignment(Qt.AlignmentFlag.AlignCenter)
+        header.setMinimumHeight(40)
+
+        # 선택 행 강조 스타일
+        self._table.setStyleSheet(
+            "QTableWidget::item:selected {"
+            "  background-color: #2980b9;"
+            "  color: #ffffff;"
+            "}"
+        )
 
         # 컬럼 너비 초기값
         self._table.setColumnWidth(COL_STEP, 50)
@@ -211,7 +227,7 @@ class RecipePanel(QWidget):
         combo = QComboBox()
         combo.addItems(["vent", "chamber"])
         combo.setCurrentText(step.fourway)
-        combo.setStyleSheet("background: #12122a; color: #e0e0e0;")
+        combo.setStyleSheet("background: #ffffff; color: #2c3e50;")
         self._table.setCellWidget(row, tail + 3, combo)
 
     def _delete_step(self):
@@ -256,7 +272,7 @@ class RecipePanel(QWidget):
         c = QComboBox()
         c.addItems(["vent", "chamber"])
         c.setCurrentText(value)
-        c.setStyleSheet("background: #12122a; color: #e0e0e0;")
+        c.setStyleSheet("background: #ffffff; color: #2c3e50;")
         return c
 
     def _renumber_steps(self):

@@ -7,7 +7,7 @@ import logging
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QProgressBar, QGroupBox, QMessageBox, QSizePolicy
+    QProgressBar, QGroupBox, QMessageBox, QSizePolicy, QFrame
 )
 from PySide6.QtCore import Qt, Signal
 
@@ -27,34 +27,35 @@ class PvBarWidget(QWidget):
 
     def _build_ui(self):
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(2, 1, 2, 1)
-        layout.setSpacing(6)
+        layout.setContentsMargins(4, 2, 4, 2)
+        layout.setSpacing(8)
 
         self._lbl_name = QLabel(self._ch.name)
-        self._lbl_name.setFixedWidth(58)
+        self._lbl_name.setFixedWidth(62)
         self._lbl_name.setStyleSheet(
-            f"color:{self._ch.color};font-size:11px;font-weight:bold;")
+            f"color:{self._ch.color};font-size:12px;font-weight:bold;")
 
         self._bar = QProgressBar()
         self._bar.setRange(0, 1000)
         self._bar.setValue(0)
         self._bar.setTextVisible(False)
-        self._bar.setFixedHeight(16)
+        self._bar.setFixedHeight(20)
         self._bar.setStyleSheet(
-            f"QProgressBar{{background:#12122a;border:1px solid #2d2d4e;border-radius:3px;}}"
-            f"QProgressBar::chunk{{background:{self._ch.color};border-radius:2px;}}")
+            f"QProgressBar{{background:#e8eaed;border:1px solid #bdc3c7;border-radius:4px;}}"
+            f"QProgressBar::chunk{{background:{self._ch.color};border-radius:3px;}}")
 
         self._lbl_pv = QLabel("0.0")
-        self._lbl_pv.setFixedWidth(62)
+        self._lbl_pv.setFixedWidth(68)
         self._lbl_pv.setObjectName("label_pv")
         self._lbl_pv.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
 
         self._lbl_sv = QLabel("/ 0.0")
-        self._lbl_sv.setFixedWidth(65)
-        self._lbl_sv.setStyleSheet("color:#ffcc00;font-size:11px;")
+        self._lbl_sv.setFixedWidth(70)
+        self._lbl_sv.setObjectName("label_sv")
 
         self._lbl_unit = QLabel("sccm")
-        self._lbl_unit.setStyleSheet("color:#606080;font-size:10px;")
+        self._lbl_unit.setFixedWidth(36)
+        self._lbl_unit.setStyleSheet("color:#7f8c8d;font-size:10px;")
 
         layout.addWidget(self._lbl_name)
         layout.addWidget(self._bar, stretch=1)
@@ -92,88 +93,139 @@ class ProcessPanel(QWidget):
 
     def _build_ui(self):
         root = QVBoxLayout(self)
-        root.setContentsMargins(10, 10, 10, 10)
-        root.setSpacing(8)
+        root.setContentsMargins(10, 8, 10, 8)
+        root.setSpacing(6)
 
-        # ── 상태 + 제어 버튼 ──────────────────────────
-        top = QHBoxLayout()
+        # ══════════════════════════════════════════════════
+        # 1행: 공정 상태 (컴팩트 한 줄) + 레시피명
+        # ══════════════════════════════════════════════════
+        status_row = QHBoxLayout()
+        status_row.setSpacing(10)
 
-        # 상태 그룹
-        sg = QGroupBox("공정 상태")
-        sl = QHBoxLayout(sg)
         self._led_state = LedIndicator("gray", size=22)
         self._lbl_state = QLabel("대기")
         self._lbl_state.setStyleSheet(
-            "color:#a0c0ff;font-size:17px;font-weight:bold;")
-        self._lbl_loop  = QLabel("루프: -/-")
-        self._lbl_loop.setStyleSheet("color:#a0a0c0;font-size:12px;")
-        self._lbl_step  = QLabel("스텝: -")
-        self._lbl_step.setStyleSheet("color:#a0a0c0;font-size:12px;")
-        self._lbl_recipe = QLabel("")
-        self._lbl_recipe.setStyleSheet("color:#4a8adf;font-size:11px;")
-        sl.addWidget(self._led_state)
-        sl.addWidget(self._lbl_state)
-        sl.addSpacing(16)
-        sl.addWidget(self._lbl_loop)
-        sl.addSpacing(10)
-        sl.addWidget(self._lbl_step)
-        sl.addStretch(1)
-        sl.addWidget(self._lbl_recipe)
-        top.addWidget(sg, stretch=3)
+            "color:#2c3e50;font-size:17px;font-weight:bold;")
 
-        # 버튼 그룹
-        bg = QGroupBox("제어")
-        bl = QVBoxLayout(bg)
+        sep1 = self._make_vsep()
+
+        self._lbl_loop = QLabel("루프: -/-")
+        self._lbl_loop.setStyleSheet("color:#5d6d7e;font-size:12px;font-weight:bold;")
+        self._lbl_step = QLabel("스텝: -")
+        self._lbl_step.setStyleSheet("color:#5d6d7e;font-size:12px;font-weight:bold;")
+
+        sep2 = self._make_vsep()
+
+        self._lbl_recipe = QLabel("")
+        self._lbl_recipe.setStyleSheet("color:#2980b9;font-size:12px;font-weight:bold;")
+
+        status_row.addWidget(self._led_state)
+        status_row.addWidget(self._lbl_state)
+        status_row.addWidget(sep1)
+        status_row.addWidget(self._lbl_loop)
+        status_row.addWidget(self._lbl_step)
+        status_row.addWidget(sep2)
+        status_row.addWidget(self._lbl_recipe)
+        status_row.addStretch(1)
+
+        root.addLayout(status_row)
+
+        # ══════════════════════════════════════════════════
+        # 2행: 제어 버튼 (가로 2줄)
+        # ══════════════════════════════════════════════════
+        ctrl_grp = QGroupBox("제어")
+        ctrl_root = QVBoxLayout(ctrl_grp)
+        ctrl_root.setContentsMargins(8, 14, 8, 8)
+        ctrl_root.setSpacing(6)
+
+        # 1줄: AUTO RUN + STOP (크게)
+        row1 = QHBoxLayout()
+        row1.setSpacing(8)
+
         self._btn_run = QPushButton("▶  AUTO RUN")
         self._btn_run.setObjectName("btn_autorun")
+        self._btn_run.setFixedHeight(50)
+        self._btn_run.setStyleSheet(
+            self._btn_run.styleSheet() + "font-size:15px;")
         self._btn_run.clicked.connect(self.run_requested)
 
         self._btn_stop = QPushButton("■  STOP")
         self._btn_stop.setObjectName("btn_stop")
+        self._btn_stop.setFixedHeight(50)
+        self._btn_stop.setStyleSheet(
+            self._btn_stop.styleSheet() + "font-size:15px;")
         self._btn_stop.setEnabled(False)
         self._btn_stop.clicked.connect(self._on_stop_clicked)
 
+        row1.addWidget(self._btn_run, stretch=1)
+        row1.addWidget(self._btn_stop, stretch=1)
+        ctrl_root.addLayout(row1)
+
+        # 2줄: PURGE + 비상정지 (보통 크기)
+        row2 = QHBoxLayout()
+        row2.setSpacing(8)
+
         self._btn_purge = QPushButton("PURGE")
         self._btn_purge.setObjectName("btn_purge")
+        self._btn_purge.setFixedHeight(36)
         self._btn_purge.clicked.connect(self.purge_requested)
 
         self._btn_emergency = QPushButton("⚠  비상 정지")
         self._btn_emergency.setObjectName("btn_emergency")
+        self._btn_emergency.setFixedHeight(40)
         self._btn_emergency.clicked.connect(self._on_emergency_clicked)
 
-        for b in [self._btn_run, self._btn_stop, self._btn_purge, self._btn_emergency]:
-            bl.addWidget(b)
-        top.addWidget(bg, stretch=1)
-        root.addLayout(top)
+        row2.addWidget(self._btn_purge, stretch=1)
+        row2.addWidget(self._btn_emergency, stretch=1)
+        ctrl_root.addLayout(row2)
 
-        # ── 타이머 프로그레스 ─────────────────────────
+        root.addWidget(ctrl_grp)
+
+        # ══════════════════════════════════════════════════
+        # 3행: 공정 타이머 (프로그레스바 + 큰 카운트다운)
+        # ══════════════════════════════════════════════════
         tg = QGroupBox("공정 타이머")
         tl = QVBoxLayout(tg)
+        tl.setContentsMargins(8, 14, 8, 8)
+        tl.setSpacing(4)
 
-        for tag, color, name in [("prepare", "#f39c12", "준비"),
+        for tag, color, name in [("prepare", "#e67e22", "준비"),
                                   ("measure", "#27ae60", "측정")]:
             row = QHBoxLayout()
+            row.setSpacing(8)
+
             lbl = QLabel(name)
-            lbl.setFixedWidth(38)
-            lbl.setStyleSheet(f"color:{color};font-weight:bold;")
+            lbl.setFixedWidth(36)
+            lbl.setStyleSheet(f"color:{color};font-weight:bold;font-size:12px;")
+
             pb = QProgressBar()
             pb.setObjectName(f"pb_{tag}")
             pb.setFormat("0 / 0 s")
-            pb.setFixedHeight(20)
+            pb.setFixedHeight(22)
+
             cd = QLabel("--:--")
-            cd.setFixedWidth(56)
-            cd.setStyleSheet(f"color:{color};font-size:14px;font-weight:bold;")
+            cd.setFixedWidth(72)
+            cd.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            cd.setStyleSheet(
+                f"color:{color};font-size:18px;font-weight:bold;"
+                f"background:#ffffff;border:1px solid #bdc3c7;"
+                f"border-radius:4px;padding:2px;")
+
             row.addWidget(lbl)
-            row.addWidget(pb)
+            row.addWidget(pb, stretch=1)
             row.addWidget(cd)
             tl.addLayout(row)
             setattr(self, f"_pb_{tag}", pb)
             setattr(self, f"_cd_{tag}", cd)
         root.addWidget(tg)
 
-        # ── PV 바 ─────────────────────────────────────
-        pv_grp = QGroupBox("MFC 실시간 유량  ( PV청록 / SV노랑 )")
+        # ══════════════════════════════════════════════════
+        # 4행: PV 바 그래프 (stretch 확보)
+        # ══════════════════════════════════════════════════
+        pv_grp = QGroupBox("MFC 실시간 유량  ( PV / SV )")
         pv_layout = QVBoxLayout(pv_grp)
+        pv_layout.setContentsMargins(6, 14, 6, 6)
+        pv_layout.setSpacing(2)
         self._pv_bars: dict[int, PvBarWidget] = {}
         for ch in self._channels:
             if ch.enabled:
@@ -182,14 +234,20 @@ class ProcessPanel(QWidget):
                 pv_layout.addWidget(bar)
         if not self._pv_bars:
             pv_layout.addWidget(QLabel("(활성 채널 없음)"))
-        root.addWidget(pv_grp)
+        pv_layout.addStretch(1)
+        pv_grp.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        root.addWidget(pv_grp, stretch=1)
 
-        # ── 알람 ─────────────────────────────────────
+        # ══════════════════════════════════════════════════
+        # 5행: 알람 (컴팩트)
+        # ══════════════════════════════════════════════════
         alarm_grp = QGroupBox("알람")
         al = QHBoxLayout(alarm_grp)
+        al.setContentsMargins(8, 14, 8, 8)
         self._led_alarm = LedIndicator("gray", size=18)
         self._lbl_alarm = QLabel("정상")
-        self._lbl_alarm.setStyleSheet("color:#a0a0c0;")
+        self._lbl_alarm.setStyleSheet("color:#5d6d7e;")
         self._lbl_alarm.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         self._btn_ack = QPushButton("알람 확인")
@@ -200,7 +258,15 @@ class ProcessPanel(QWidget):
         al.addWidget(self._btn_ack)
         root.addWidget(alarm_grp)
 
-        root.addStretch(1)
+    # ── 유틸리티 ──────────────────────────────────────
+
+    @staticmethod
+    def _make_vsep() -> QFrame:
+        sep = QFrame()
+        sep.setFrameShape(QFrame.Shape.VLine)
+        sep.setStyleSheet("color:#bdc3c7;")
+        sep.setFixedHeight(22)
+        return sep
 
     # ── 버튼 핸들러 ──────────────────────────────────
 
@@ -275,12 +341,12 @@ class ProcessPanel(QWidget):
 
     def on_alarm(self, alarm: Alarm):
         _cmap = {
-            AlarmLevel.INFO:     ("blue",   "#a0c0ff"),
-            AlarmLevel.WARNING:  ("orange", "#f39c12"),
+            AlarmLevel.INFO:     ("blue",   "#2980b9"),
+            AlarmLevel.WARNING:  ("orange", "#e67e22"),
             AlarmLevel.ERROR:    ("red",    "#e74c3c"),
-            AlarmLevel.CRITICAL: ("red",    "#ff4444"),
+            AlarmLevel.CRITICAL: ("red",    "#c0392b"),
         }
-        color, tc = _cmap.get(alarm.level, ("gray", "#a0a0c0"))
+        color, tc = _cmap.get(alarm.level, ("gray", "#5d6d7e"))
         self._led_alarm.set_color(color)
         self._led_alarm.set_on(True)
         self._lbl_alarm.setText(f"[{alarm.level.value}] {alarm.message}")
@@ -289,7 +355,7 @@ class ProcessPanel(QWidget):
     def on_alarm_ack(self):
         self._led_alarm.set_on(False)
         self._lbl_alarm.setText("정상")
-        self._lbl_alarm.setStyleSheet("color:#a0a0c0;")
+        self._lbl_alarm.setStyleSheet("color:#5d6d7e;")
 
     def set_recipe_name(self, name: str):
         self._lbl_recipe.setText(name)

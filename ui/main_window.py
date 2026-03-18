@@ -38,7 +38,7 @@ class MainWindow(QMainWindow):
         self._flow_calc = flow_calc
 
         self.setWindowTitle("GAS Control System v1.0")
-        self.setMinimumSize(1280, 820)
+        self.setMinimumSize(1100, 700)
 
         self._build_ui()
         self._connect_signals()
@@ -57,6 +57,9 @@ class MainWindow(QMainWindow):
 
         self._tabs = QTabWidget()
         self._tabs.setDocumentMode(True)
+        self._tabs.setStyleSheet(
+            "QTabBar::tab { min-height: 36px; font-size: 14px; }")
+
 
         # HMI
         self._hmi = HmiPanel(channels=self._config.channels, device=self._device)
@@ -85,8 +88,16 @@ class MainWindow(QMainWindow):
         self.setStatusBar(sb)
         self._lbl_sb_state  = QLabel("상태: 대기")
         self._lbl_sb_recipe = QLabel("레시피: —")
-        self._lbl_sb_hw     = QLabel("HW: 시뮬레이션")
         self._lbl_sb_time   = QLabel("")
+
+        # 드라이버 모드 배지 (눈에 띄게)
+        self._lbl_sb_hw = QLabel("SIM")
+        self._lbl_sb_hw.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._lbl_sb_hw.setFixedWidth(120)
+        self._lbl_sb_hw.setStyleSheet(
+            "background:#e67e22;color:#ffffff;font-weight:bold;"
+            "font-size:11px;border-radius:3px;padding:2px 8px;")
+
         for w in [self._lbl_sb_state, self._sep(),
                   self._lbl_sb_recipe, self._sep()]:
             sb.addWidget(w)
@@ -101,30 +112,30 @@ class MainWindow(QMainWindow):
 
     def _make_header(self) -> QWidget:
         h = QWidget()
-        h.setFixedHeight(56)
+        h.setFixedHeight(48)
         h.setStyleSheet(
             "background:qlineargradient(x1:0,y1:0,x2:1,y2:0,"
-            "stop:0 #0f3460,stop:1 #16213e);"
-            "border-bottom:2px solid #e94560;")
+            "stop:0 #2c3e50,stop:1 #34495e);"
+            "border-bottom:2px solid #2980b9;")
         l = QHBoxLayout(h)
-        l.setContentsMargins(14, 4, 14, 4)
+        l.setContentsMargins(14, 2, 14, 2)
 
         title = QLabel("⬡  GAS Control System")
         title.setStyleSheet(
-            "color:#fff;font-size:21px;font-weight:bold;background:transparent;")
+            "color:#ffffff;font-size:19px;font-weight:bold;background:transparent;")
         l.addWidget(title)
         l.addStretch(1)
 
         self._lbl_alarm_badge = QLabel("")
         self._lbl_alarm_badge.setStyleSheet(
-            "background:transparent;color:#ff4444;font-size:13px;font-weight:bold;")
+            "background:transparent;color:#e74c3c;font-size:13px;font-weight:bold;")
         l.addWidget(self._lbl_alarm_badge)
 
         btn_set = QPushButton("⚙  설정")
-        btn_set.setFixedWidth(85)
+        btn_set.setFixedWidth(80)
         btn_set.setStyleSheet(
-            "background:#0f3460;color:#a0c0ff;border:1px solid #2d5a8a;"
-            "border-radius:4px;padding:4px;font-size:13px;")
+            "background:rgba(255,255,255,0.15);color:#ecf0f1;border:1px solid rgba(255,255,255,0.3);"
+            "border-radius:4px;padding:4px;font-size:12px;font-weight:bold;")
         btn_set.clicked.connect(self._open_settings)
         l.addWidget(btn_set)
         return h
@@ -132,7 +143,7 @@ class MainWindow(QMainWindow):
     @staticmethod
     def _sep() -> QLabel:
         s = QLabel("|")
-        s.setStyleSheet("color:#404060;padding:0 4px;")
+        s.setStyleSheet("color:#95a5a6;padding:0 4px;")
         return s
 
     # ── Signal 연결 ───────────────────────────────────
@@ -173,11 +184,17 @@ class MainWindow(QMainWindow):
         self._device.connect()
         drv = self._config.hardware.get("driver_type", "mock")
         if drv == "mock":
-            self._lbl_sb_hw.setText("HW: 시뮬레이션 모드")
+            self._lbl_sb_hw.setText("⚠ SIMULATION")
+            self._lbl_sb_hw.setStyleSheet(
+                "background:#e67e22;color:#ffffff;font-weight:bold;"
+                "font-size:11px;border-radius:3px;padding:2px 8px;")
             self._hmi.set_hw_connected(False)
             self._alarm.info("시뮬레이션 모드 시작 (Mock Driver)", "System")
         else:
-            self._lbl_sb_hw.setText("HW: 연결됨")
+            self._lbl_sb_hw.setText("● CONNECTED")
+            self._lbl_sb_hw.setStyleSheet(
+                "background:#27ae60;color:#ffffff;font-weight:bold;"
+                "font-size:11px;border-radius:3px;padding:2px 8px;")
             self._hmi.set_hw_connected(True)
             self._alarm.info("실제 장비 연결됨", "System")
         self._alarm.info("프로그램 시작", "System")

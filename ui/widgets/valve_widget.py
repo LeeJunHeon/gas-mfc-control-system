@@ -29,7 +29,7 @@ class ValveWidget(QWidget):
         self._is_error = False
         self._enabled_ctrl = True   # 제어 가능 여부
 
-        self.setFixedSize(52, 60)
+        self.setFixedSize(60, 68)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setToolTip(f"{label}: {'열림' if self._is_open else '닫힘'}")
 
@@ -109,7 +109,7 @@ class ValveWidget(QWidget):
                          (size + 2) * 2, (size + 2) * 2)
 
         # 라벨 텍스트
-        painter.setPen(QPen(QColor("#a0c0ff"), 1))
+        painter.setPen(QPen(QColor("#2c3e50"), 1))
         font = QFont()
         font.setPointSize(8)
         font.setBold(True)
@@ -120,7 +120,7 @@ class ValveWidget(QWidget):
         painter.end()
 
     def sizeHint(self) -> QSize:
-        return QSize(52, 60)
+        return QSize(60, 68)
 
 
 class SolenoidWidget(ValveWidget):
@@ -161,7 +161,7 @@ class SolenoidWidget(ValveWidget):
         painter.drawPath(path)
 
         # 라벨
-        painter.setPen(QPen(QColor("#a0c0ff"), 1))
+        painter.setPen(QPen(QColor("#2c3e50"), 1))
         font = QFont()
         font.setPointSize(8)
         font.setBold(True)
